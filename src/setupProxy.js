@@ -6,7 +6,7 @@ module.exports = (app) => {
     createProxyMiddleware({
       target: "https://chat-gpt-server-eight.vercel.app/",
       changeOrigin: true,
-      secure: true,
+      secure: false,
     })
   );
 };
