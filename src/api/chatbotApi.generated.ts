@@ -5,7 +5,7 @@ import { RootState } from "../store";
 const injectedRtkApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: "https://chat-gpt-server-eight.vercel.app/api",
     prepareHeaders: async (headers, { getState }) => {
       const state = getState() as RootState;
       const token = state.auth.access_token;
