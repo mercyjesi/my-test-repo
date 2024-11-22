@@ -22,16 +22,6 @@ export const ContactForm = ({ contactSubmit }: IContactProps) => {
         {contactQuestions?.map((q, index) => (
           <div key={index}>
             <label className="form-label">
-              {q?.companyName}
-              <span className="error">*</span>
-            </label>
-            <input
-              className="form-input"
-              type="text"
-              {...register("companyName")}
-              required
-            />
-            <label className="form-label">
               {q?.name}
               <span className="error">*</span>
             </label>
@@ -59,6 +49,16 @@ export const ContactForm = ({ contactSubmit }: IContactProps) => {
               className="form-input"
               type="designation"
               {...register("designation")}
+              required
+            />
+            <label className="form-label">
+              {q?.companyName}
+              <span className="error">*</span>
+            </label>
+            <input
+              className="form-input"
+              type="text"
+              {...register("companyName")}
               required
             />
             <button className="btn-submit" type="submit">
