@@ -65,6 +65,7 @@ export const useChatPage = () => {
       companyName: data.companyName,
       name: data.userName,
       email: data.email,
+      designation: data.designation,
     };
     dispatch(setContactQuestionResponse(contactResponse));
     getChatResponse({

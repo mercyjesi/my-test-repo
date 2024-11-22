@@ -45,6 +45,7 @@ export interface IContactQuestion {
   companyName: string;
   name: string;
   email: string;
+  designation: string;
 }
 
 export type AuthApiArg = void;

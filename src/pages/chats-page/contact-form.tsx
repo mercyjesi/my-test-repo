@@ -6,6 +6,7 @@ export interface IFormInput {
   companyName: string;
   userName: string;
   email: string;
+  designation: string;
 }
 interface IContactProps {
   contactSubmit: (data: IFormInput) => void;
@@ -48,6 +49,16 @@ export const ContactForm = ({ contactSubmit }: IContactProps) => {
               className="form-input"
               type="email"
               {...register("email")}
+              required
+            />
+            <label className="form-label">
+              {q?.designation}
+              <span className="error">*</span>
+            </label>
+            <input
+              className="form-input"
+              type="designation"
+              {...register("designation")}
               required
             />
             <button className="btn-submit" type="submit">
