@@ -29,7 +29,9 @@ export const Chats = ({ chat }: IChatProps) => (
           <div className="response-label">
             <p>
               {decodeHtmlEntities(
-                chat.chatGptResponse?.replace("<br />", "&#10;") ?? ""
+                chat.chatGptResponse
+                  ?.replace("<br />", "&#10;")
+                  .replace("<br>", "&#10;") ?? ""
               )}
             </p>
           </div>
