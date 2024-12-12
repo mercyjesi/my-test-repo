@@ -1,22 +1,27 @@
 import { useAppDispatch } from "../../use-app-dispatch";
 import { setAuth } from "../../store/authSlice";
-import { api, ChatbotApiArg } from "../../api/chatbotApi.generated";
+import {
+  api,
+  ChatbotApiArg,
+  IContactQuestion,
+} from "../../api/chatbotApi.generated";
 import { useEffect, useState } from "react";
 import {
   addChat,
-  clearContactQuestions,
   setContactQuestionResponse,
-  setContactQuestions,
   setCustomerId,
 } from "../../store/chatbotSlice";
 import { isDefined } from "../../utils";
-import { IFormInput } from "./contact-form";
-import { toast } from "react-toastify";
+
+interface IErrorParams {
+  userData: string;
+  msg: string;
+}
 
 export const useChatPage = () => {
   const dispatch = useAppDispatch();
   const { data } = api.useGetAccessTokenQuery();
-  const [userVerification, setUserVerification] = useState<boolean>(false);
+  const [contactField, setContactField] = useState<string | null>(null);
   const [userId, setUserId] = useState<number>();
   const [
     getChatResponse,
@@ -29,29 +34,30 @@ export const useChatPage = () => {
 
   useEffect(() => {
     if (isDefined(chatResponseData)) {
-      if (userVerification) {
-        setUserVerification(false);
-        dispatch(clearContactQuestions());
-        toast.success(chatResponseData.chatGptResponse);
-      } else {
+      if (isDefined(chatResponseData?.customerId) && !userId) {
+        setUserId(chatResponseData?.customerId);
+        dispatch(setCustomerId(chatResponseData.customerId));
+      }
+      if (isDefined(chatResponseData.chatGptResponse)) {
         dispatch(
           addChat({
             chatGptResponse: chatResponseData.chatGptResponse,
             chatType: 2,
           })
         );
-        if (isDefined(chatResponseData.contactQuestions)) {
-          setUserVerification(true);
-          dispatch(setContactQuestions(chatResponseData.contactQuestions));
-        } else {
-          if (isDefined(chatResponseData?.customerId)) {
-            if (!userId) {
-              setUserId(chatResponseData?.customerId);
-              dispatch(setCustomerId(chatResponseData.customerId));
-            }
-          }
-        }
+      } else if (isDefined(chatResponseData.contactQuestions)) {
+        const contactKey = Object.keys(chatResponseData.contactQuestions[0])[0];
+        setContactField(contactKey);
+        dispatch(
+          addChat({
+            chatGptResponse: Object.values(
+              chatResponseData.contactQuestions[0]
+            )[0],
+            chatType: 2,
+          })
+        );
       }
+      console.log("chatResponseData", chatResponseData);
     }
   }, [chatResponseData]);
 
@@ -59,24 +65,27 @@ export const useChatPage = () => {
     dispatch(addChat({ question, chatType: 1 }));
     getChatResponse({ question, customerId: userId });
   };
-
-  const contactSubmit = (data: IFormInput) => {
-    const contactResponse = {
-      companyName: data.companyName,
-      name: data.userName,
-      email: data.email,
-      designation: data.designation,
-    };
+  const sendContact = (
+    contactResponse: IContactQuestion,
+    contValue: string
+  ) => {
     dispatch(setContactQuestionResponse(contactResponse));
+    dispatch(addChat({ question: contValue, chatType: 1 }));
     getChatResponse({
       customerId: userId,
       contactQuestionResponse: contactResponse,
     });
   };
+  const displayError = ({ userData, msg }: IErrorParams) => {
+    dispatch(addChat({ question: userData, chatType: 1 }));
+    dispatch(addChat({ chatGptResponse: msg, chatType: 2 }));
+  };
+
   return {
     getGptReponse,
     chatResponseIsLoading,
-    userVerification,
-    contactSubmit,
+    contactField,
+    sendContact,
+    displayError,
   };
 };

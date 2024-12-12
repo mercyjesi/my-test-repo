@@ -29,23 +29,6 @@ export const PageFooter = () => (
             <span>SINGAPORE - 486066</span>
           </div>
         </div>
-        <div className="footer-right__bottom">
-          <span>Subscribe to Newsletter</span>
-          <form>
-            <label>Enter Your Email</label>
-            <div className="text-box">
-              <input
-                name="email"
-                type="email"
-                placeholder=""
-                pattern="^.+@.+\.[a-zA-Z]{2,63}$"
-                maxLength={250}
-                autoComplete="off"
-              />
-              <button>Subscribe</button>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
   </footer>

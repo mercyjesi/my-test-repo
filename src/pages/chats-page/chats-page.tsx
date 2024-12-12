@@ -3,27 +3,73 @@ import { Chats } from "./chats";
 import { useChatPage } from "./use-chat-page";
 import { useAppSelector } from "../../use-app-dispatch";
 import { getChats } from "../../store/chatbotSlice";
-import { ChatPageContainer, PopupContainer } from "./chats-page.styled";
-import { ContactForm } from "./contact-form";
+import { ChatPageContainer } from "./chats-page.styled";
+import { isDefined } from "../../utils";
 
 export const ChatsPage = () => {
   const {
     getGptReponse,
     chatResponseIsLoading,
-    userVerification,
-    contactSubmit,
+    contactField,
+    sendContact,
+    displayError,
   } = useChatPage();
   const chats = useAppSelector(getChats);
   const [userQuestion, setUserQuestion] = useState<string>();
   const [disableButton, setDisableButton] = useState<boolean>(true);
-  const [showPopup, setShowPopup] = useState<boolean>(userVerification);
+  const [contactKey, setContactKey] = useState<string | null>();
+
+  useEffect(() => {
+    setContactKey(contactField);
+  }, [contactField]);
   const handleTextChange = (inputData: string) => {
     setUserQuestion(inputData);
-    if (inputData && !showPopup) setDisableButton(false);
+    if (inputData) setDisableButton(false);
     else setDisableButton(true);
   };
+  const validateName = (name: string): boolean => {
+    const regex = /^[A-Za-z\s]+$/; // Regular expression to match alphabets and spaces only
+    return regex.test(name);
+  };
+  const validateEmail = (email: string): boolean => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return regex.test(email);
+  };
   const handleSubmit = () => {
-    getGptReponse({ question: userQuestion });
+    if (contactKey) {
+      if (contactKey === "name" && isDefined(userQuestion)) {
+        if (validateName(userQuestion)) {
+          sendContact({ name: userQuestion }, userQuestion);
+        } else {
+          displayError({
+            userData: userQuestion,
+            msg: "Name can include only alphabets and space",
+          });
+        }
+      }
+      if (contactKey === "email" && isDefined(userQuestion)) {
+        if (validateEmail(userQuestion)) {
+          sendContact({ email: userQuestion }, userQuestion);
+        } else {
+          displayError({
+            userData: userQuestion,
+            msg: "Please enter valid email id",
+          });
+        }
+      }
+      if (contactKey === "companyName") {
+        if (isDefined(userQuestion)) {
+          sendContact({ companyName: userQuestion }, userQuestion);
+        }
+      }
+      if (contactKey === "designation") {
+        if (isDefined(userQuestion)) {
+          sendContact({ designation: userQuestion }, userQuestion);
+        }
+      }
+    } else {
+      getGptReponse({ question: userQuestion });
+    }
     handleTextChange("");
   };
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -32,17 +78,6 @@ export const ChatsPage = () => {
       handleSubmit();
     }
   };
-
-  useEffect(() => {
-    if (userVerification) {
-      setShowPopup(true);
-      setDisableButton(true);
-      document.body.style.overflow = "hidden";
-    } else {
-      setShowPopup(false);
-      document.body.style.overflow = "auto";
-    }
-  }, [userVerification]);
 
   return (
     <ChatPageContainer>
@@ -73,14 +108,6 @@ export const ChatsPage = () => {
           Send
         </button>
       </div>
-      <PopupContainer
-        style={{
-          display: showPopup ? "flex" : "none",
-          opacity: showPopup ? 1 : 0,
-        }}
-      >
-        <ContactForm contactSubmit={contactSubmit} />
-      </PopupContainer>
     </ChatPageContainer>
   );
 };

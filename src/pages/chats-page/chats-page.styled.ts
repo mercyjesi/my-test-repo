@@ -132,6 +132,7 @@ export const QueryContainer = styled("div")({
     font: "normal normal normal 18px / 1.3em madefor-text, helveticaneuew01-45ligh, helveticaneuew02-45ligh, helveticaneuew10-45ligh, sans-serif",
     color: "rgb(0 2 9 / 80%)",
     margin: "4%",
+    whiteSpace: "break-spaces",
   },
   "& .response-rect": {
     borderBottom: "23px solid transparent",

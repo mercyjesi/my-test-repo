@@ -42,10 +42,10 @@ const injectedRtkApi = createApi({
 });
 export { injectedRtkApi as api };
 export interface IContactQuestion {
-  companyName: string;
-  name: string;
-  email: string;
-  designation: string;
+  companyName?: string;
+  name?: string;
+  email?: string;
+  designation?: string;
 }
 
 export type AuthApiArg = void;
