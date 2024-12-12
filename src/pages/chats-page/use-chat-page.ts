@@ -45,6 +45,7 @@ export const useChatPage = () => {
             chatType: 2,
           })
         );
+        setContactField(null);
       } else if (isDefined(chatResponseData.contactQuestions)) {
         const contactKey = Object.keys(chatResponseData.contactQuestions[0])[0];
         setContactField(contactKey);
@@ -57,7 +58,6 @@ export const useChatPage = () => {
           })
         );
       }
-      console.log("chatResponseData", chatResponseData);
     }
   }, [chatResponseData]);
 
